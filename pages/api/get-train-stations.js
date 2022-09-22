@@ -1,13 +1,18 @@
-import getAllStations from "../../modules/get-all-stations";
+import getStations from "../../modules/get-stations";
 // Gets all dart stations - could be extended to pass station type
 
 
 
-export default function handler(req, res) {
-    if (req.method === 'GET') {
-     const stations = getAllStations('D');
-     res.send(stations)
-    } else {
-    res.status(400)
-    }
+export default async function  handler(req, res) {
+    try {
+        if (req.method === 'GET') {
+        const stations = await getStations(req.stationId);
+        console.log(stations)
+        return res.send(stations)
+        } else {
+            res.status(404)
+            }
+        } catch(err) {
+            res.status(500)
+        }
   };
