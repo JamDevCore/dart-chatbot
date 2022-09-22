@@ -26,42 +26,48 @@ export default function Home() {
         return stationTimes.data;
     }
 
-    const respond = (stationData, station) => {
+    const respond = async (stationData, station, currentMessageLog) => {
       const trainOne = stationData[0];
       const trainTwo = stationData[1];
+      
       const message = `The next two trains to arrive at ${capitalise(station)} are the ${trainOne.Exparrival} from ${trainOne.Origin} and the ${trainTwo.Exparrival} from ${trainTwo.Origin}`;
-      setMessageLog(messageLog.concat({
+      currentMessageLog = currentMessageLog.concat({
         message,
         time: `${new Date().getHours()}:${new Date().getMinutes()}`,
         type: 'bot',
-      }));
+      });
+      await setMessageLog(currentMessageLog)
     }
 
     const submitMessage = async (e) => {
 
      e.preventDefault()
+        const date = new Date();     // Get the minutes (0-59)
      const message = document.querySelector('#chat-box').value;
-     const date = new Date();     // Get the minutes (0-59)
-     await setMessageLog(messageLog.concat({
+     let currentMessageLog = messageLog;
+      currentMessageLog = currentMessageLog.concat({
         message,
         time: `${date.getHours()}:${date.getMinutes()}`,
         type: 'user',
-     }))
+     })
+  
+     await setMessageLog(currentMessageLog)
      console.log(message)
      // set loading
      const result = await chatBot(message);
      if(!result.success) {
-        await setMessageLog(messageLog.concat({
+        currentMessageLog=  currentMessageLog.concat({
             message: result.message,
             time: `${date.getHours()}:${date.getMinutes()}`,
             type: 'bot',
-         }))
+         })
+        await setMessageLog(currentMessageLog)
         return;
      }
 
      const stationData = await fetchStationData(result.station);
      console.log(stationData)
-     respond(stationData, result.station)
+     await respond(stationData, result.station, currentMessageLog)
     }
     useEffect(() => {
         console.log(messageLog)
