@@ -1,7 +1,7 @@
 import axios from 'axios'
 import {useState, useEffect, useRef} from 'react'
 import chatBot from '../modules/chat-bot';
-import Message from '../components/Message';
+import Message from '../components/message';
 import {capitalise} from '../utilities/capitalise';
 import {getDefaultMessage} from '../utilities/get-default-message';
 
