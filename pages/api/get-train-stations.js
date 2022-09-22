@@ -7,7 +7,6 @@ export default async function  handler(req, res) {
     try {
         if (req.method === 'GET') {
         const stations = await getStations(req.stationId);
-        console.log(stations)
         return res.send(stations)
         } else {
             res.status(404)

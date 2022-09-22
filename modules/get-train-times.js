@@ -8,22 +8,24 @@ const getTrainTimes = async (stationName) => {
     const stationData = await axios.get(`http://api.irishrail.ie/realtime/realtime.asmx/getStationDataByNameXML?StationDesc=${stationName}`)
     const parser = new XMLParser();
     const stationDataJson = await parser.parse(stationData.data);
-    console.log(stationDataJson)
     let trainsArray = stationDataJson.ArrayOfObjStationData.objStationData;
-
-    // Remove deperature station from train array here e.g trains that leave and depart from same station 
-
+    // XML parser is having issues when only one station is found, creates an object instead of an array
+    // With more time a solution could be found or different package used. For now we just treat it as if it 
+    // found no available trains
+    if(trainsArray.length) {
+            
      // Turns time variable into an orderable format so we can get next departure for users
-     trainsArray = trainsArray.map(train => {
-        const updatedTrain = train;
-        console.log(updatedTrain.Expdepart)
-        updatedTrain.nextDepart = parseInt(updatedTrain.Expdepart.split(':').join(''))
-        return updatedTrain
-    })
-    // Sorts by departure time
-    trainsArray = trainsArray.sort((a,b) => a.nextDepart - b.nextDepart);
-
-    return trainsArray
+        trainsArray = trainsArray.map(train => {
+            const updatedTrain = train;
+    
+            updatedTrain.nextDepart = parseInt(updatedTrain.Expdepart.split(':').join(''))
+            return updatedTrain
+        })
+        // Sorts by departure time
+        trainsArray = trainsArray.sort((a,b) => a.nextDepart - b.nextDepart);
+        return trainsArray
+        } 
+        return [];
 
 }
 
